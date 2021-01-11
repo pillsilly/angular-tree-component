@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { TreeNode, TreeModel, TREE_ACTIONS, KEYS, IActionMapping, ITreeOptions } from 'angular-tree-component';
+import {Component, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {TreeNode, TreeModel, TREE_ACTIONS, KEYS, IActionMapping, ITreeOptions, TreeComponent} from 'angular-tree-component';
 
 const actionMapping: IActionMapping = {
   mouse: {
@@ -34,88 +34,91 @@ const actionMapping: IActionMapping = {
 @Component({
   selector: 'app-fulltree',
   styles: [
-    `button: {
-        line - height: 24px;
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
-        border: none;
-        border-radius: 2px;
-        background: #A3D9F5;
-        cursor: pointer;
-        margin: 0 3px;
-      }`
+      `button: {
+      line -height: 24px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+      border: none;
+      border-radius: 2px;
+      background: #A3D9F5;
+      cursor: pointer;
+      margin: 0 3px;
+    }`
   ],
   template: `
-  <form>
-    <input #filter (keyup)="filterNodes(filter.value, tree)" placeholder="filter nodes"/>
-  </form>
-  <div style="height: 400px; width: 400px; overflow: hidden;">
+    <form>
+      <input #filter (keyup)="filterNodes(filter.value, tree)" placeholder="filter nodes"/>
+    </form>
+    <div style="height: 400px; width: 400px; overflow: hidden;">
 
-    <tree-root
-      #tree
-      [nodes]="nodes"
-      [options]="customTemplateStringOptions"
-      [focused]="true"
-      (event)="onEvent($event)"
-      (initialized)="onInitialized(tree)"
-    >
-      <ng-template #treeNodeTemplate let-node>
-        <span title="{{node.data.subTitle}}">{{ node.data.name }}</span>
-        <span class="pull-right">{{ childrenCount(node) }}</span>
-        <button (click)="go($event)">Custom Action</button>
-      </ng-template>
-      <ng-template #loadingTemplate>Loading, please hold....</ng-template>
-    </tree-root>
-  </div>
-  <br>
-  <p>Keys:</p>
-  down | up | left | right | space | enter
-  <p>Mouse:</p>
-  click to select | shift+click to select multi
-  <p>API:</p>
-  <button (click)="tree.treeModel.focusNextNode()">next node</button>
-  <button (click)="tree.treeModel.focusPreviousNode()">previous node</button>
-  <button (click)="tree.treeModel.focusDrillDown()">drill down</button>
-  <button (click)="tree.treeModel.focusDrillUp()">drill up</button>
-  <button (click)="customTemplateStringOptions.allowDrag = true">allowDrag</button>
-  <p></p>
-  <button
-    [disabled]="!tree.treeModel.getFocusedNode()"
-    (click)="tree.treeModel.getFocusedNode().toggleActivated()">
-    {{ tree.treeModel.getFocusedNode()?.isActive ? 'deactivate' : 'activate' }}
-  </button>
-  <button
-    [disabled]="!tree.treeModel.getFocusedNode()"
-    (click)="tree.treeModel.getFocusedNode().toggleExpanded()">
-    {{ tree.treeModel.getFocusedNode()?.isExpanded ? 'collapse' : 'expand' }}
-  </button>
-  <button
-    [disabled]="!tree.treeModel.getFocusedNode()"
-    (click)="tree.treeModel.getFocusedNode().blur()">
-    blur
-  </button>
-  <button
-    (click)="addNode(tree)">
-    Add Node
-  </button>
-  <button
-    (click)="activateSubSub(tree)">
-    Activate inner node
-  </button>
-  <button
-    (click)="tree.treeModel.expandAll()">
-    Expand All
-  </button>
-  <button
-    (click)="tree.treeModel.collapseAll()">
-    Collapse All
-  </button>
-  <button
-    (click)="activeNodes(tree.treeModel)">
-    getActiveNodes()
-  </button>
+      <tree-root
+        #tree
+        [nodes]="nodes"
+        [options]="customTemplateStringOptions"
+        [focused]="true"
+        (event)="onEvent($event)"
+        (initialized)="onInitialized(tree)"
+      >
+        <ng-template #treeNodeTemplate let-node>
+          <span title="{{node.data.subTitle}}">{{ node.data.name }}</span>
+          <span class="pull-right">{{ childrenCount(node) }}</span>
+          <button (click)="go($event)">Custom Action</button>
+        </ng-template>
+        <ng-template #loadingTemplate>Loading, please hold....</ng-template>
+      </tree-root>
+    </div>
+    <br>
+    <p>Keys:</p>
+    down | up | left | right | space | enter
+    <p>Mouse:</p>
+    click to select | shift+click to select multi
+    <p>API:</p>
+    <button (click)="tree.treeModel.focusNextNode()">next node</button>
+    <button (click)="tree.treeModel.focusPreviousNode()">previous node</button>
+    <button (click)="tree.treeModel.focusDrillDown()">drill down</button>
+    <button (click)="tree.treeModel.focusDrillUp()">drill up</button>
+    <button (click)="customTemplateStringOptions.allowDrag = true">allowDrag</button>
+    <p></p>
+    <button
+      [disabled]="!tree.treeModel.getFocusedNode()"
+      (click)="tree.treeModel.getFocusedNode().toggleActivated()">
+      {{ tree.treeModel.getFocusedNode()?.isActive ? 'deactivate' : 'activate' }}
+    </button>
+    <button
+      [disabled]="!tree.treeModel.getFocusedNode()"
+      (click)="tree.treeModel.getFocusedNode().toggleExpanded()">
+      {{ tree.treeModel.getFocusedNode()?.isExpanded ? 'collapse' : 'expand' }}
+    </button>
+    <button
+      [disabled]="!tree.treeModel.getFocusedNode()"
+      (click)="tree.treeModel.getFocusedNode().blur()">
+      blur
+    </button>
+    <button
+      (click)="addNode(tree)">
+      Add Node
+    </button>
+    <button
+      (click)="activateSubSub(tree)">
+      Activate inner node
+    </button>
+    <button
+      (click)="expandAll()">
+      Expand All
+    </button>
+    <button
+      (click)="tree.treeModel.collapseAll()">
+      Collapse All
+    </button>
+    <button
+      (click)="activeNodes(tree.treeModel)">
+      getActiveNodes()
+    </button>
   `
 })
 export class FullTreeComponent implements OnInit {
+
+  constructor() {
+  }
   nodes: any[];
   nodes2 = [{name: 'root'}, {name: 'root2'}];
   asyncChildren = new Array(4).fill(null).map((item, n) => ({
@@ -139,10 +142,45 @@ export class FullTreeComponent implements OnInit {
       return true;
     },
     useVirtualScroll: true,
-    animateExpand: true
+    animateExpand: false
   };
-  constructor() {
+
+  @ViewChild('tree', { read: TreeComponent, static: true })
+  tree: TreeComponent;
+
+  public setExpandedNodes(expandedNodeIds: any) {
+    this.tree.treeModel.expandedNodeIds = expandedNodeIds;
+    // this.refresh();
   }
+
+  public collapseAll() {
+    let expandedNodeIds: any = {};
+    this.setExpandedNodes(expandedNodeIds);
+  }
+
+  public expandAll() {
+    let expandedNodeIds: any = {};
+    for (let node of this.tree.treeModel.roots) {
+      expandedNodeIds = this.updateNode(node, expandedNodeIds, true)
+    }
+    this.setExpandedNodes(expandedNodeIds);
+  }
+
+  private updateNode(node: TreeNode, expandedNodeIds: any, expand: boolean) {
+    let newExp = expandedNodeIds
+    let children = node.children
+    if (children) {
+      for (let child of children) {
+        newExp = this.updateNode(child, newExp, expand);
+      }
+    }
+    if (node.hasChildren) {
+      return Object.assign({}, newExp, {[node.id]: expand});
+    }
+    return newExp;
+  }
+
+
   ngOnInit() {
     setTimeout(() => {
       this.nodes = [
@@ -192,7 +230,7 @@ export class FullTreeComponent implements OnInit {
         }
       ];
 
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 2000; i++) {
         this.nodes.push({
           name: `rootDynamic${i}`,
           subTitle: `root created dynamically ${i}`,
